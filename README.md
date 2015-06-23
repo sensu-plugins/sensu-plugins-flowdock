@@ -14,14 +14,22 @@
  * bin/handler-flowdock.rb
 
 ## Usage
-
+flowdock.json
 ```
 {
   "flowdock": {
-    "auth_token": "FLOWDOCK_API_TOKEN"
+    "auth_token": "FLOWDOCK_API_TOKEN",
+    "tags" : ["sensu", "my-team"], // Optional, deafults to ['sensu']
+    "user_name" : "Status" // Optional, defaults to 'Sensu'
   }
 }
 ```
+
+auth_token is the only required parameter.
+
+Optionally include an auth token, list of tags, or user name in the client
+or check to override the global config.
+
 
 ## Installation
 
