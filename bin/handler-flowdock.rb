@@ -27,26 +27,36 @@ class FlowdockNotifier < Sensu::Handler
          long: '--json_config JsonConfig',
          required: false
 
-  def build_tag_list
+  def build_tags_list
     json_config = config[:json_config] || 'flowdock'
-    default_tag = settings[json_config]['tag'] || 'sensu'
-    tag = default_tag.split(' ')
+    default_tags = settings[json_config]['tags'] || 'sensu'
+    tags = default_tags.split(' ')
     if settings[json_config].key?('subscriptions')
       @event['check']['subscribers'].each do |sub|
         if settings[json_config]['subscriptions'].key?(sub)
-          tag.concat settings[json_config]['subscriptions'][sub]['tag'].split(' ')
+          tags.concat settings[json_config]['subscriptions'][sub]['tags'].split(' ')
         end
       end
     end
-    tag
+    tags
   end
 
   def handle
     json_config = config[:json_config] || 'flowdock'
-    token  = settings[json_config]['auth_token']
-    data   = "Host: #{@event['client']['name']} Check: #{@event['check']['name']} - #{@event['check']['output']}"
-    tag    = build_tag_list
-    flow   = Flowdock::Flow.new(api_token: token, external_user_name: 'Sensu')
-    flow.push_to_chat(content: data, tags: tag)
+    token     = settings[json_config]['auth_token']
+    data      = "Host: #{@event['client']['name']} Check: #{@event['check']['name']} - #{@event['check']['output']}"
+    tags       = build_tags_list
+    name_from = settings[json_config]['name_from'] || 'Sensu'
+
+    push_type = settings[json_config]['push_type'] || 'chat'
+    if push_type.eql? "chat"
+      flow   = Flowdock::Flow.new(api_token: token, external_user_name: name_from)
+      flow.push_to_chat(content: data, tags: tags)
+    elsif push_type.eql? "inbox"
+      mail_from    = settings[json_config]['mail_from'] || 'alerting@sensu.com'
+      subject_from = settings[json_config]['subject_from'] || 'Sensu alerting'
+      flow = Flowdock::Flow.new(api_token: token, source: name_from, from: {name: name_from, address: mail_from})
+      flow.push_to_team_inbox(subject: subject_from, content: data, tags: tags)
+    end
   end
 end
