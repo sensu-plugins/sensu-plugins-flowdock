@@ -49,6 +49,19 @@ class FlowdockNotifier < Sensu::Handler
     @event['client']['name'] + '/' + @event['check']['name']
   end
 
+  def status_to_string
+    case @event['check']['status']
+    when 0
+      'OK'
+    when 1
+      'WARNING'
+    when 2
+      'CRITICAL'
+    else
+      'UNKNOWN'
+    end
+  end
+
   def handle
     json_config = config[:json_config] || 'flowdock'
     token     = settings[json_config]['auth_token']
