@@ -49,13 +49,13 @@ class FlowdockNotifier < Sensu::Handler
     name_from = settings[json_config]['name_from'] || 'Sensu'
 
     push_type = settings[json_config]['push_type'] || 'chat'
-    if push_type.eql? "chat"
+    if push_type.eql? 'chat'
       flow   = Flowdock::Flow.new(api_token: token, external_user_name: name_from)
       flow.push_to_chat(content: data, tags: tags)
-    elsif push_type.eql? "inbox"
+    elsif push_type.eql? 'inbox'
       mail_from    = settings[json_config]['mail_from'] || 'alerting@sensu.com'
       subject_from = settings[json_config]['subject_from'] || 'Sensu alerting'
-      flow = Flowdock::Flow.new(api_token: token, source: name_from, from: {name: name_from, address: mail_from})
+      flow = Flowdock::Flow.new(api_token: token, source: name_from, from: { name: name_from, address: mail_from })
       flow.push_to_team_inbox(subject: subject_from, content: data, tags: tags)
     end
   end
