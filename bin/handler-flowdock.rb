@@ -41,6 +41,14 @@ class FlowdockNotifier < Sensu::Handler
     tags
   end
 
+  def action_to_string
+    @event['action'].eql?('resolve') ? 'RESOLVED' : 'ALERT'
+  end
+
+  def short_name
+    @event['client']['name'] + '/' + @event['check']['name']
+  end
+
   def handle
     json_config = config[:json_config] || 'flowdock'
     token     = settings[json_config]['auth_token']
@@ -54,7 +62,11 @@ class FlowdockNotifier < Sensu::Handler
       flow.push_to_chat(content: data, tags: tags)
     elsif push_type.eql? 'inbox'
       mail_from    = settings[json_config]['mail_from'] || 'alerting@sensu.com'
-      subject_from = settings[json_config]['subject_from'] || 'Sensu alerting'
+      if @event['check']['notification'].nil?
+        subject_from = "#{action_to_string} - #{short_name}: #{status_to_string}"
+      else
+        subject_from = "#{action_to_string} - #{short_name}: #{@event['check']['notification']}"
+      end
       flow = Flowdock::Flow.new(api_token: token, source: name_from, from: { name: name_from, address: mail_from })
       flow.push_to_team_inbox(subject: subject_from, content: data, tags: tags)
     end
