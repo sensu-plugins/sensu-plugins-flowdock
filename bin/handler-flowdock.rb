@@ -47,5 +47,6 @@ class FlowdockNotifier < Sensu::Handler
     data   = "Host: #{@event['client']['name']} Check: #{@event['check']['name']} - #{@event['check']['output']}"
     tag    = build_tag_list
     flow   = Flowdock::Flow.new(api_token: token, external_user_name: 'Sensu')
+	flow.push_to_chat(content: data, tags: tag)
   end
 end
