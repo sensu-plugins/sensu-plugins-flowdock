@@ -29,12 +29,12 @@ class FlowdockNotifier < Sensu::Handler
 
   def build_tag_list
     json_config = config[:json_config] || 'flowdock'
-    default_tag = settings[json_config]['tag'] || "sensu"
-    tag = default_tag.split(" ")
+    default_tag = settings[json_config]['tag'] || 'sensu'
+    tag = default_tag.split(' ')
     if settings[json_config].key?('subscriptions')
       @event['check']['subscribers'].each do |sub|
         if settings[json_config]['subscriptions'].key?(sub)
-          tag.concat settings[json_config]['subscriptions'][sub]['tag'].split(" ")
+          tag.concat settings[json_config]['subscriptions'][sub]['tag'].split(' ')
         end
       end
     end
@@ -47,7 +47,5 @@ class FlowdockNotifier < Sensu::Handler
     data   = "Host: #{@event['client']['name']} Check: #{@event['check']['name']} - #{@event['check']['output']}"
     tag    = build_tag_list
     flow   = Flowdock::Flow.new(api_token: token, external_user_name: 'Sensu')
-    flow.push_to_chat(content: data, tags: tag)
-
   end
 end
