@@ -21,10 +21,33 @@ require 'sensu-handler'
 require 'flowdock'
 
 class FlowdockNotifier < Sensu::Handler
+  option :json_config,
+         description: 'Config Name',
+         short: '-j JsonConfig',
+         long: '--json_config JsonConfig',
+         required: false
+
+  def build_tag_list
+    json_config = config[:json_config] || 'flowdock'
+    default_tag = settings[json_config]['tag'] || "sensu"
+    tag = default_tag.split(" ")
+    if settings[json_config].key?('subscriptions')
+      @event['check']['subscribers'].each do |sub|
+        if settings[json_config]['subscriptions'].key?(sub)
+          tag.concat settings[json_config]['subscriptions'][sub]['tag'].split(" ")
+        end
+      end
+    end
+    tag
+  end
+
   def handle
-    token = settings['flowdock']['auth_token']
-    data = @event['check']['output']
-    flow = Flowdock::Flow.new(api_token: token, external_user_name: 'Sensu')
-    flow.push_to_chat(content: data, tags: %w(sensu test))
+    json_config = config[:json_config] || 'flowdock'
+    token  = settings[json_config]['auth_token']
+    data   = "Host: #{@event['client']['name']} Check: #{@event['check']['name']} - #{@event['check']['output']}"
+    tag    = build_tag_list
+    flow   = Flowdock::Flow.new(api_token: token, external_user_name: 'Sensu')
+    flow.push_to_chat(content: data, tags: tag)
+
   end
 end
