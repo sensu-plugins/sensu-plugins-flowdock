@@ -18,9 +18,28 @@
 ```
 {
   "flowdock": {
-    "auth_token": "FLOWDOCK_API_TOKEN"
+    "auth_token": "FLOWDOCK_API_TOKEN",
+    "tags" : "sensu alerting",
+    "push_type": "inbox|chat",
+    "mail_from": "alerting@sensu.com",
+    "name_from": "Sensu",
+    "subscriptions": {
+        "default": {
+            "tags": "default"
+        }
+    }
   }
 }
+
+Params are optionals, only auth_token is required.
+
+  * auth_token : Flowdock token API
+  * tag : Fowdock tags separate by " "
+  * push_type : Push into inbox or chat (default chat)
+  * mail_from : email from for inbox
+  * name_from : Name of flowdock/email user
+  * subscriptions : Allow to add more tags according to subscriber
+
 ```
 
 ## Installation
