@@ -5,7 +5,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## Unreleased][unreleased]
 
-## [0.1.2] - 2015-09-16
+## [0.1.0] - 2015-10-14
 ### Added
 - Updated README
 - Param -j JsonConfig : To be able to choose config name
@@ -21,4 +21,3 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ### Added
 - initial release
-
