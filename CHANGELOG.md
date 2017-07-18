@@ -1,10 +1,13 @@
-#Change Log
+# Change Log
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
-## [1.0.0] - 2017-07-6
+### Breaking Changes
+- Minimum Ruby runtime version is now 2.0
+
+## [1.0.0] - 2017-07-06
 ### Breaking Changes
 - Removed Ruby 1.9 support
 
